@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sasi's SQL Report Card</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page:        #f9f9f7;
+    --surface:     #fcfcfb;
+    --text:        #0b0b0b;
+    --text-2:      #52514e;
+    --muted:       #898781;
+    --track:       #e1e0d9;
+    --border:      rgba(11,11,11,0.10);
+    --series:      #2a78d6;
+    --good:        #006300;
+    --critical:    #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page:      #0d0d0d;
+      --surface:   #1a1a19;
+      --text:      #ffffff;
+      --text-2:    #c3c2b7;
+      --muted:     #898781;
+      --track:     #2c2c2a;
+      --border:    rgba(255,255,255,0.10);
+      --series:    #3987e5;
+      --good:      #0ca30c;
+      --critical:  #d03b3b;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 32px 18px 64px;
+  }
+  main { max-width: 660px; margin: 0 auto; }
+
+  header { margin-bottom: 24px; }
+  h1 { font-size: 20px; margin: 0 0 2px; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 13px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+
+  /* hero score */
+  .score { font-size: 66px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+  .score span { font-size: 22px; font-weight: 500; color: var(--text-2); }
+  .verdict { margin-top: 8px; font-size: 15px; color: var(--text-2); }
+  .delta { margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .delta b { color: var(--text-2); font-weight: 600; }
+
+  /* band strip */
+  .bands { margin-top: 20px; }
+  .bands .rail {
+    position: relative;
+    height: 8px;
+    border-radius: 5px;
+    background: linear-gradient(90deg,
+      var(--track) 0 30%, #c9dcf3 30% 55%, #9ec5f4 55% 80%, #6da7ec 80% 100%);
+  }
+  @media (prefers-color-scheme: dark) {
+    .bands .rail {
+      background: linear-gradient(90deg,
+        var(--track) 0 30%, #1c3a5c 30% 55%, #234b76 55% 80%, #2e5f92 80% 100%);
+    }
+  }
+  .bands .pin {
+    position: absolute; top: -5px; width: 2px; height: 18px;
+    background: var(--text); border-radius: 2px;
+  }
+  .bands .pin::after {
+    content: attr(data-label);
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    font-size: 11px; font-weight: 700; white-space: nowrap; color: var(--text);
+  }
+  .bands .ticks {
+    display: flex; margin-top: 26px; font-size: 10.5px; color: var(--muted);
+  }
+  .bands .ticks span { flex: 1; }
+  .bands .ticks span:nth-child(2),
+  .bands .ticks span:nth-child(3),
+  .bands .ticks span:nth-child(4) { text-align: center; }
+  .bands .ticks span:last-child { flex: 0; text-align: right; }
+
+  /* metric bars */
+  .metric {
+    display: grid;
+    grid-template-columns: 132px 1fr 34px;
+    gap: 12px; align-items: center;
+    margin: 10px 0;
+  }
+  .metric .lbl { font-size: 13px; color: var(--text-2); }
+  .metric .track { background: var(--track); border-radius: 4px; height: 10px; }
+  .metric .fill { background: var(--series); height: 10px; border-radius: 4px; }
+  .metric .val { font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; color: var(--text-2); }
+
+  ol, ul { margin: 0; padding-left: 20px; }
+  li { margin: 7px 0; }
+  li .tag {
+    font-size: 11px; font-variant-numeric: tabular-nums;
+    color: var(--muted); margin-left: 4px;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sparkbar { display: inline-block; height: 8px; background: var(--series); border-radius: 3px; vertical-align: middle; }
+
+  .foot { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .foot b { color: var(--text-2); }
+</style>
+</head>
+<body>
+<main>
+
+  <header>
+    <h1>Sasi&rsquo;s SQL Report Card</h1>
+    <div class="sub">Session 5 (Lesson 6 &mdash; GROUP BY/HAVING) &nbsp;&middot;&nbsp; 2026-09-23 &nbsp;&middot;&nbsp; regenerated each session</div>
+  </header>
+
+  <section class="card">
+    <h2>Where I stand &mdash; as a SQL query writer, vs the job market</h2>
+    <div class="score">70<span>&thinsp;/&thinsp;100</span></div>
+    <div class="verdict">Comfortably mid-<b>&ldquo;writes day-to-day SQL&rdquo;</b>. Filtering, sorting, NULL
+      handling, aggregates, and now <b>per-group aggregates</b> (<code>GROUP BY</code>, <code>HAVING</code>)
+      are all working. One piece left for full coverage: <code>JOIN</code>.</div>
+    <div class="delta"><b>vs last session:</b> <span style="color:var(--good)">&#9650; +5</span> (65 &rarr; 70). 5 of 7 first try; the 2 misses were the two textbook first-time <code>GROUP BY</code> mix-ups, not carelessness &mdash; see focus below.</div>
+
+    <div class="bands">
+      <div class="rail"><div class="pin" style="left:70%" data-label="70 &mdash; you"></div></div>
+      <div class="ticks">
+        <span>0</span><span>30</span><span>55</span><span>80</span><span>100</span>
+      </div>
+      <div class="ticks" style="margin-top:2px">
+        <span>getting&nbsp;started</span>
+        <span>SQL-literate<br>(read &amp; run)</span>
+        <span>writes day-to-day SQL<br>(joins, group by) &mdash; <b>target</b></span>
+        <span>developer&nbsp;/&nbsp;DBA<br>(out of scope)</span>
+        <span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Score breakdown</h2>
+    <div class="metric">
+      <div class="lbl">Concept grasp</div>
+      <div class="track"><div class="fill" style="width:76%" title="76 / 100"></div></div>
+      <div class="val">76</div>
+    </div>
+    <div class="metric">
+      <div class="lbl">Syntax accuracy</div>
+      <div class="track"><div class="fill" style="width:80%" title="80 / 100"></div></div>
+      <div class="val">80</div>
+    </div>
+    <div class="metric">
+      <div class="lbl">Independence</div>
+      <div class="track"><div class="fill" style="width:68%" title="68 / 100"></div></div>
+      <div class="val">68</div>
+    </div>
+    <div class="metric">
+      <div class="lbl">Market coverage</div>
+      <div class="track"><div class="fill" style="width:62%" title="62 / 100"></div></div>
+      <div class="val">62</div>
+    </div>
+    <p class="foot" style="margin-top:14px">
+      <b>Concept grasp</b> &mdash; do the ideas land once explained. <b>76</b> &mdash; small dip; missed <code>GROUP BY</code>-vs-<code>ORDER BY</code> and <code>WHERE</code>-vs-<code>HAVING</code>, the two near-universal first-exposure mix-ups on this topic.
+      <b>Syntax accuracy</b> &mdash; queries that run first try. <b>80</b> &mdash; 5 of 7 clean first try, including multi-part queries (group + alias + sort).
+      <b>Independence</b> &mdash; writing without being shown the pattern. <b>68</b> &mdash; up; also self-diagnosed a wrong attempt once shown the fix.
+      <b>Market coverage</b> &mdash; how much of the day-to-day-SQL set (SELECT &rarr; WHERE &rarr; JOIN &rarr; GROUP BY) is covered. <b>62</b> &mdash; Lessons 1&ndash;6 of ~8. Only <code>JOIN</code> left.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Where I&rsquo;m losing points &mdash; focus here</h2>
+    <ol>
+      <li><b><code>GROUP BY</code> vs <code>ORDER BY</code>.</b> Thought grouping sorts the rows; it actually collapses them into one row per group. <span class="tag">1&times; &mdash; first exposure</span><br>
+        <span class="foot">Picture it as: 16 rows in &rarr; <code>GROUP BY dept_id</code> &rarr; 5 rows out, one per department.</span></li>
+      <li><b><code>WHERE</code> vs <code>HAVING</code>.</b> Tried filtering an aggregate with <code>WHERE</code> / inside the <code>SELECT</code> list. An aggregate condition can only go in <code>HAVING</code>, which runs after grouping. <span class="tag">1&times; &mdash; self-corrected</span></li>
+      <li><b>Not a concern:</b> both misses are the two most common first-time <code>GROUP BY</code> confusions &mdash; not a sign of trouble. Every other watch-item (table-name <code>s</code>, incomplete queries, NULL logic) stayed resolved.<span class="tag">expected</span></li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Next plan</h2>
+    <ol>
+      <li><b>Lessons 7&ndash;8</b> &mdash; <code>JOIN</code>: combining rows from two tables (e.g. an employee&rsquo;s name <i>with</i> their department&rsquo;s name, not just the id). The last big piece for full coverage.</li>
+      <li>No re-drill needed on <code>GROUP BY</code>/<code>HAVING</code> &mdash; revisit only if the mix-up recurs.</li>
+      <li>Once <code>JOIN</code> is done, coverage is essentially complete for &ldquo;writes day-to-day SQL&rdquo; &mdash; expect the score to settle in the high 70s/low 80s.</li>
+      <li><b>Goal for next session:</b> Lesson 7 (<code>INNER JOIN</code>) done.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>Session history</h2>
+    <table>
+      <thead>
+        <tr><th>Date</th><th>Session</th><th>Lesson</th><th class="num">Score</th><th>Trend</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2026-09-03</td>
+          <td>1</td>
+          <td>1 &mdash; SELECT basics</td>
+          <td class="num">30</td>
+          <td><span class="sparkbar" style="width:30px"></span> baseline</td>
+        </tr>
+        <tr>
+          <td>2026-09-04</td>
+          <td>2</td>
+          <td>2&ndash;3 &mdash; WHERE, ORDER BY/LIMIT/DISTINCT</td>
+          <td class="num">52</td>
+          <td><span class="sparkbar" style="width:52px"></span> <span style="color:var(--good)">&#9650; +22</span></td>
+        </tr>
+        <tr>
+          <td>2026-09-09</td>
+          <td>3</td>
+          <td>4 &mdash; NULL / IS NULL / COALESCE</td>
+          <td class="num">57</td>
+          <td><span class="sparkbar" style="width:57px"></span> <span style="color:var(--good)">&#9650; +5</span></td>
+        </tr>
+        <tr>
+          <td>2026-09-10</td>
+          <td>4</td>
+          <td>5 &mdash; aggregates (COUNT/SUM/AVG/MIN/MAX)</td>
+          <td class="num">65</td>
+          <td><span class="sparkbar" style="width:65px"></span> <span style="color:var(--good)">&#9650; +8</span></td>
+        </tr>
+        <tr>
+          <td>2026-09-23</td>
+          <td>5</td>
+          <td>6 &mdash; GROUP BY / HAVING</td>
+          <td class="num">70</td>
+          <td><span class="sparkbar" style="width:70px"></span> <span style="color:var(--good)">&#9650; +5</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="foot" style="margin-top:12px">Each session adds a row here, so the climb is visible over time.</p>
+  </section>
+
+  <section class="card">
+    <h2>What the score means</h2>
+    <p class="foot">
+      Graded against what the <b>job market</b> expects of someone who writes SQL day-to-day
+      (data / ops analyst, implementation consultant, technical support, technical PM) &mdash;
+      <b>not</b> a SQL developer or DBA, which needs schema design, indexing and tuning and is
+      deliberately out of scope.<br><br>
+      <b>0&ndash;30</b> getting started &nbsp;&middot;&nbsp;
+      <b>30&ndash;55</b> SQL-literate: can read, run, filter, sort, sanity-check simple numbers &nbsp;&middot;&nbsp;
+      <b>55&ndash;80</b> writes day-to-day SQL unaided: joins, grouping, aggregates &nbsp;<b>&larr; the target</b> &nbsp;&middot;&nbsp;
+      <b>80&ndash;100</b> developer / DBA territory.<br><br>
+      Full detail in <b>LEARNING_LOG.md</b>.
+    </p>
+  </section>
+
+</main>
+</body>
+</html>
