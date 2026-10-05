@@ -26,6 +26,21 @@ for me." That's roughly Lessons 2–8 of this course, done fluently and unaided.
 
 ## Market-readiness snapshot
 
+**2026-10-05 — Session 6 (Lesson 7, JOIN): 77/100. Full target coverage except Lesson 8.**
+
+- 5 of 6 JOIN questions first try, plus one correct-result query that used double
+  quotes for a string (SQLite tolerates it; real databases don't — flagged).
+- Checked the schema before writing the join (asked "there's no `dept_name` in
+  employees?") and then wrote the query cleanly — the schema-first habit is
+  paying off.
+- Grasped the core model fast: a join glues rows where keys match, only matched
+  rows survive, and aliases (`e.`, `d.`) are needed once two tables share a
+  column name like `dept_id`.
+- JOIN + `GROUP BY` combined correctly (Q5) — grouping by a *name* pulled through
+  the join instead of a raw id.
+- Coverage 62 → 75. Only **Lesson 8 (LEFT JOIN / anti-joins — "find the people
+  with no X")** remains to fully cover the target level.
+
 **2026-09-23 — Session 5 (Lesson 6, GROUP BY/HAVING): 70/100.**
 
 - 5 of 7 correct first try; every query that got written was clean. The two
@@ -325,3 +340,46 @@ classic first-time `GROUP BY`/`HAVING` confusions, not carelessness.**
   of the target level.
 - No re-drill needed on `GROUP BY`/`HAVING` — the misses were first-exposure,
   not a stuck pattern; revisit only if it recurs.
+
+---
+
+### Session 6 — 2026-09-23 → 2026-10-05
+
+**Lesson:** 7 — `JOIN` (two-table joins). **Tool:** DBeaver + chat grading.
+Paused mid-lesson for a git/GitHub checkpoint (repo pushed to
+github.com/Jdingara/sql-writer on 2026-10-01); resumed and finished 2026-10-05.
+
+| Q | Asked | What Sasi did | Outcome |
+|---|-------|---------------|---------|
+| 1 | What does `JOIN` fundamentally do? | `a` (combines two tables, matching rows where a shared column is equal) | ✅ first try |
+| 2 | Each employee's name + department name | checked first ("there is no `dept_name` in employees?") → then `select e.first_name, e.last_name, d.dept_name from employees e join departments d on e.dept_id = d.dept_id;` | ✅ 15 rows; Paula correctly absent |
+| 3 | Each project's name + owning department name | `select p.project_name, d.dept_name from projects p join departments d on p.dept_id = d.dept_id;` | ✅ first try → 6 rows |
+| 4 | Engineering employees + department location, salary shown | `... where d.dept_name = "Engineering";` | ✅ correct result, but **double quotes** on a string — SQLite-only leniency, flagged; should be `'Engineering'` |
+| 5 | Avg salary per department name (JOIN + GROUP BY) | `select d.dept_name, avg(e.salary) as avg_salary ... group by d.dept_name;` | ✅ first try → 4 rows |
+| 6 | Who works on which project, with role | `select e.first_name, e.last_name, ep.project_id, ep.role from employees e join employee_projects ep on e.emp_id = ep.emp_id;` | ✅ first try → 17 rows; Bob/Carol/Alice appear more than once (multi-project) |
+
+**Lesson 7: complete — 5 of 6 clean first try; 1 correct result with a quoting
+habit to fix.**
+
+**Mistake patterns this session:**
+
+9. **Double quotes around a text value** (Q4). Worked in SQLite because of its
+   leniency, but double quotes mean identifiers in standard SQL and most real
+   databases. Rule: text values always in **single** quotes (`'Engineering'`).
+
+**What clicked:**
+
+- The JOIN model: glue rows where keys match; unmatched rows drop out (Paula has
+  no department, so she disappears from any department join).
+- Table aliases (`e.`, `d.`, `ep.`) — needed once two tables share a column name
+  like `dept_id`. Used them correctly from Q2 onward.
+- `WHERE` on a joined table's column; `GROUP BY` on a joined table's column
+  (Q4 and Q5).
+- Checked the schema before writing the join rather than guessing a column name.
+
+**For next session:**
+
+- **Lesson 8** — `LEFT JOIN` and anti-joins ("people with **no** project", "departments
+  with **no** employees"). Last lesson for full target coverage.
+- Keep: single quotes for every text value; check the schema when unsure which
+  table holds a column.

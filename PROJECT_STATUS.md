@@ -176,7 +176,17 @@ types added to the engine first (see Open Decisions).
 
 ## Current Status
 
-**Last updated: 2026-09-30**
+**Last updated: 2026-10-05**
+
+### 2026-10-05 — Session 6 complete: Lesson 7 (JOIN) done
+
+Finished Lesson 7 after the git checkpoint. Q6 (`employees` ⨝ `employee_projects`,
+17 rows) correct first try. Lesson total: 5 of 6 clean first try; the one
+non-clean item was double-quoted text (`"Engineering"`) — correct result in
+SQLite, but fixed to single quotes as the rule going forward. Report card 70 → 77/100.
+Only **Lesson 8 (LEFT JOIN / anti-joins)** remains for full target coverage. Docs
+(`LEARNING_LOG.md`, `report.html`, this file) updated and committed/pushed to
+https://github.com/Jdingara/sql-writer.
 
 ### 2026-09-30 — Session 6 (in progress): Lesson 7 (JOIN), git init
 
@@ -190,10 +200,12 @@ once Lesson 7 (or the whole JOIN pair, Lessons 7–8) is complete, to avoid a
 premature mid-lesson number.
 
 At Sasi's request, the repo is now a **git repository**: `git init`, full commit
-of all files (see Core Decision 15). GitHub push is **blocked** — `gh` CLI is
-installed but not authenticated on this machine (`gh auth status` → not logged
-in). Needs Sasi to run `gh auth login` interactively (or supply an existing
-GitHub repo URL) before a remote can be added and pushed.
+of all files (see Core Decision 15), branch renamed to `main`, remote
+**https://github.com/Jdingara/sql-writer** added and pushed successfully (Sasi
+created the empty repo via the GitHub web UI; `git push` worked without needing
+`gh auth login` — Git Credential Manager handled it). Repo is public/private per
+Sasi's own choice on GitHub — not tracked here, check the repo settings if it
+matters later.
 
 ### 2026-09-23 — Session 5: Lesson 6 (GROUP BY / HAVING) complete
 
@@ -283,10 +295,11 @@ Sasi actually installed **DBeaver** (not DB Browser) and connected `practice.db`
 | 4 — NULL (IS NULL / IS NOT NULL / COALESCE) | ✅ Complete (Session 3, 2026-09-09). All 4 query questions first try; both concept/MCQ questions missed — NULL three-valued logic not stuck at the time. |
 | 5 — Aggregates (COUNT/SUM/AVG/MIN/MAX) | ✅ Complete (Session 4, 2026-09-10). Cleanest lesson yet, near-zero errors; NULL re-drill passed and the idea transferred (predicted `COUNT(manager_id)`=11 with unaided reasoning). |
 | 6 — GROUP BY / HAVING | ✅ Complete (Session 5, 2026-09-23). 5/7 first try; the 2 misses were the two textbook first-time confusions (GROUP BY-vs-ORDER BY, WHERE-vs-HAVING for aggregates) — expected, not concerning. |
-| 7–8 — JOIN | Next — last piece for full coverage |
+| 7 — JOIN (two-table: INNER JOIN, aliases, JOIN+WHERE, JOIN+GROUP BY) | ✅ Complete (Session 6, 2026-10-05). 5/6 first try; 1 correct result with double-quoted text — flagged, use single quotes. |
+| 8 — LEFT JOIN / anti-joins ("no match") | Next — last lesson for full target coverage |
 
-Report card: S1=30, S2=52, S3=57, S4=65, S5=**70/100** (mid "writes day-to-day
-SQL" band; only `JOIN` left — expect high-70s/low-80s once done). Details in
+Report card: S1=30, S2=52, S3=57, S4=65, S5=70, S6=**77/100** (solidly mid-"writes
+day-to-day SQL"; only Lesson 8 — LEFT JOIN / anti-joins — left). Details in
 `LEARNING_LOG.md` / `report.html`.
 
 ### 2026-09-03 — added a per-session learning log + visual report card
@@ -395,11 +408,10 @@ _Unresolved. One line of context each so the thread can be picked back up._
   Decide when Sasi finishes Lesson 8.
 - **Cross-module spaced repetition.** Should missed questions resurface later
   across modules, or is per-lesson re-drill enough? Leaning light; not built.
-- **GitHub remote.** Local repo initialised and committed 2026-09-30 (see Core
-  Decisions). `gh` CLI is installed but **not authenticated** on this machine, so
-  the GitHub-hosted remote + push are not done yet — needs Sasi to run
-  `gh auth login` once (or hand over an existing repo URL) before that step can
-  complete.
+- ~~GitHub remote~~ **Resolved 2026-10-01.** Sasi created
+  https://github.com/Jdingara/sql-writer (empty, via the web UI); `origin` added
+  and pushed via plain `git push` (Git Credential Manager handled auth — `gh`
+  itself is still not logged in, but wasn't needed). Branch is `main`.
 - **(Mostly moot)** Safe DML writes and a `salaries` history table were open
   items for SQL Lessons 12–13 — those lessons are now cut from scope. Revisit
   only if Sasi asks for window functions or data-modification lessons.

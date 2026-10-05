@@ -137,19 +137,19 @@
 
   <header>
     <h1>Sasi&rsquo;s SQL Report Card</h1>
-    <div class="sub">Session 5 (Lesson 6 &mdash; GROUP BY/HAVING) &nbsp;&middot;&nbsp; 2026-09-23 &nbsp;&middot;&nbsp; regenerated each session</div>
+    <div class="sub">Session 6 (Lesson 7 &mdash; JOIN) &nbsp;&middot;&nbsp; 2026-10-05 &nbsp;&middot;&nbsp; regenerated each session</div>
   </header>
 
   <section class="card">
     <h2>Where I stand &mdash; as a SQL query writer, vs the job market</h2>
-    <div class="score">70<span>&thinsp;/&thinsp;100</span></div>
-    <div class="verdict">Comfortably mid-<b>&ldquo;writes day-to-day SQL&rdquo;</b>. Filtering, sorting, NULL
-      handling, aggregates, and now <b>per-group aggregates</b> (<code>GROUP BY</code>, <code>HAVING</code>)
-      are all working. One piece left for full coverage: <code>JOIN</code>.</div>
-    <div class="delta"><b>vs last session:</b> <span style="color:var(--good)">&#9650; +5</span> (65 &rarr; 70). 5 of 7 first try; the 2 misses were the two textbook first-time <code>GROUP BY</code> mix-ups, not carelessness &mdash; see focus below.</div>
+    <div class="score">77<span>&thinsp;/&thinsp;100</span></div>
+    <div class="verdict">Solidly mid-<b>&ldquo;writes day-to-day SQL&rdquo;</b>. Filtering, sorting, NULL handling,
+      aggregates, per-group aggregates, and now <b>joining tables</b> are all working. One lesson left for
+      full coverage: <code>LEFT JOIN</code> / &ldquo;find the ones with <i>no</i> match.&rdquo;</div>
+    <div class="delta"><b>vs last session:</b> <span style="color:var(--good)">&#9650; +7</span> (70 &rarr; 77). JOIN landed fast &mdash; 5 of 6 first try, one correct result with a quoting habit to fix.</div>
 
     <div class="bands">
-      <div class="rail"><div class="pin" style="left:70%" data-label="70 &mdash; you"></div></div>
+      <div class="rail"><div class="pin" style="left:77%" data-label="77 &mdash; you"></div></div>
       <div class="ticks">
         <span>0</span><span>30</span><span>55</span><span>80</span><span>100</span>
       </div>
@@ -167,49 +167,48 @@
     <h2>Score breakdown</h2>
     <div class="metric">
       <div class="lbl">Concept grasp</div>
-      <div class="track"><div class="fill" style="width:76%" title="76 / 100"></div></div>
-      <div class="val">76</div>
-    </div>
-    <div class="metric">
-      <div class="lbl">Syntax accuracy</div>
       <div class="track"><div class="fill" style="width:80%" title="80 / 100"></div></div>
       <div class="val">80</div>
     </div>
     <div class="metric">
+      <div class="lbl">Syntax accuracy</div>
+      <div class="track"><div class="fill" style="width:82%" title="82 / 100"></div></div>
+      <div class="val">82</div>
+    </div>
+    <div class="metric">
       <div class="lbl">Independence</div>
-      <div class="track"><div class="fill" style="width:68%" title="68 / 100"></div></div>
-      <div class="val">68</div>
+      <div class="track"><div class="fill" style="width:74%" title="74 / 100"></div></div>
+      <div class="val">74</div>
     </div>
     <div class="metric">
       <div class="lbl">Market coverage</div>
-      <div class="track"><div class="fill" style="width:62%" title="62 / 100"></div></div>
-      <div class="val">62</div>
+      <div class="track"><div class="fill" style="width:75%" title="75 / 100"></div></div>
+      <div class="val">75</div>
     </div>
     <p class="foot" style="margin-top:14px">
-      <b>Concept grasp</b> &mdash; do the ideas land once explained. <b>76</b> &mdash; small dip; missed <code>GROUP BY</code>-vs-<code>ORDER BY</code> and <code>WHERE</code>-vs-<code>HAVING</code>, the two near-universal first-exposure mix-ups on this topic.
-      <b>Syntax accuracy</b> &mdash; queries that run first try. <b>80</b> &mdash; 5 of 7 clean first try, including multi-part queries (group + alias + sort).
-      <b>Independence</b> &mdash; writing without being shown the pattern. <b>68</b> &mdash; up; also self-diagnosed a wrong attempt once shown the fix.
-      <b>Market coverage</b> &mdash; how much of the day-to-day-SQL set (SELECT &rarr; WHERE &rarr; JOIN &rarr; GROUP BY) is covered. <b>62</b> &mdash; Lessons 1&ndash;6 of ~8. Only <code>JOIN</code> left.
+      <b>Concept grasp</b> &mdash; do the ideas land once explained. <b>80</b> &mdash; up; JOIN model (matched rows survive, aliases, joined-table filters) landed quickly.
+      <b>Syntax accuracy</b> &mdash; queries that run first try. <b>82</b> &mdash; up; one quoting habit to fix (double quotes on text).
+      <b>Independence</b> &mdash; writing without being shown the pattern. <b>74</b> &mdash; up; checked the schema on its own before writing a join.
+      <b>Market coverage</b> &mdash; how much of the day-to-day-SQL set is covered. <b>75</b> &mdash; Lessons 1&ndash;7 of ~8. Only <code>LEFT JOIN</code> / anti-joins left.
     </p>
   </section>
 
   <section class="card">
     <h2>Where I&rsquo;m losing points &mdash; focus here</h2>
     <ol>
-      <li><b><code>GROUP BY</code> vs <code>ORDER BY</code>.</b> Thought grouping sorts the rows; it actually collapses them into one row per group. <span class="tag">1&times; &mdash; first exposure</span><br>
-        <span class="foot">Picture it as: 16 rows in &rarr; <code>GROUP BY dept_id</code> &rarr; 5 rows out, one per department.</span></li>
-      <li><b><code>WHERE</code> vs <code>HAVING</code>.</b> Tried filtering an aggregate with <code>WHERE</code> / inside the <code>SELECT</code> list. An aggregate condition can only go in <code>HAVING</code>, which runs after grouping. <span class="tag">1&times; &mdash; self-corrected</span></li>
-      <li><b>Not a concern:</b> both misses are the two most common first-time <code>GROUP BY</code> confusions &mdash; not a sign of trouble. Every other watch-item (table-name <code>s</code>, incomplete queries, NULL logic) stayed resolved.<span class="tag">expected</span></li>
+      <li><b>Double quotes around text.</b> Wrote <code>"Engineering"</code> instead of <code>'Engineering'</code>. It ran in SQLite only because SQLite is lenient. <span class="tag">1&times; &mdash; new, fix now</span><br>
+        <span class="foot">Rule: <b>single quotes for every text value</b>, double quotes only for names. Works in every database.</span></li>
+      <li><b>Not a concern:</b> the earlier <code>GROUP BY</code>/<code>HAVING</code> mix-ups stayed resolved in JOIN work. No re-drill needed.<span class="tag">closed</span></li>
     </ol>
   </section>
 
   <section class="card">
     <h2>Next plan</h2>
     <ol>
-      <li><b>Lessons 7&ndash;8</b> &mdash; <code>JOIN</code>: combining rows from two tables (e.g. an employee&rsquo;s name <i>with</i> their department&rsquo;s name, not just the id). The last big piece for full coverage.</li>
-      <li>No re-drill needed on <code>GROUP BY</code>/<code>HAVING</code> &mdash; revisit only if the mix-up recurs.</li>
-      <li>Once <code>JOIN</code> is done, coverage is essentially complete for &ldquo;writes day-to-day SQL&rdquo; &mdash; expect the score to settle in the high 70s/low 80s.</li>
-      <li><b>Goal for next session:</b> Lesson 7 (<code>INNER JOIN</code>) done.</li>
+      <li><b>Lesson 8</b> &mdash; <code>LEFT JOIN</code> and anti-joins: &ldquo;people with <i>no</i> project,&rdquo; &ldquo;departments with <i>no</i> employees.&rdquo; The last piece for full target coverage.</li>
+      <li>Keep the single-quote habit for every text value.</li>
+      <li>After Lesson 8, the score should settle in the low 80s &mdash; the remaining gap is practice volume, not missing skills.</li>
+      <li><b>Goal for next session:</b> Lesson 8 done; the first-try rate stays above 80%.</li>
     </ol>
   </section>
 
@@ -254,6 +253,13 @@
           <td>6 &mdash; GROUP BY / HAVING</td>
           <td class="num">70</td>
           <td><span class="sparkbar" style="width:70px"></span> <span style="color:var(--good)">&#9650; +5</span></td>
+        </tr>
+        <tr>
+          <td>2026-10-05</td>
+          <td>6</td>
+          <td>7 &mdash; JOIN (two-table)</td>
+          <td class="num">77</td>
+          <td><span class="sparkbar" style="width:77px"></span> <span style="color:var(--good)">&#9650; +7</span></td>
         </tr>
       </tbody>
     </table>
